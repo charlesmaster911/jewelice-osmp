@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>쥬얼아이스 OSMP — 오늘의 콘텐츠</title>
+<style>
+:root {
+  --ice-white: #FAFCFE; --crystal-blue: #B8E0F0; --crystal-blue-deep: #7CB8DB;
+  --deep-navy: #0F2D4A; --navy-soft: #1A3A5C; --silver: #C0C8D0;
+  --amber: #C8884F; --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+  --bg-soft: #F0F6FB;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(180deg, var(--ice-white) 0%, var(--bg-soft) 100%); color: var(--deep-navy); line-height: 1.75; padding: 32px 20px; min-height: 100vh; font-size: 15px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.container { max-width: 1320px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, var(--deep-navy) 0%, var(--navy-soft) 100%); color: white; padding: 28px 32px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(15,45,74,0.15); }
+.header h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 8px; }
+.header p { color: var(--crystal-blue); font-size: 14px; }
+.guide { background: white; border-left: 4px solid var(--crystal-blue); padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: var(--navy-soft); }
+.guide strong { color: var(--deep-navy); }
+.section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--silver); margin: 24px 0 14px; padding-left: 4px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+.new-content-btn { background: linear-gradient(135deg, var(--crystal-blue-deep) 0%, var(--deep-navy) 100%); color: white; border: none; padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; box-shadow: 0 4px 12px rgba(124,184,219,0.3); letter-spacing: -0.2px; display: inline-flex; align-items: center; gap: 8px; }
+.new-content-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(124,184,219,0.4); }
+.new-content-btn .plus { font-size: 20px; font-weight: 400; line-height: 1; }
+
+.osmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-bottom: 24px; }
+.osmp-card { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 2px 12px rgba(15,45,74,0.06); cursor: pointer; transition: all 0.25s; border: 2px solid transparent; position: relative; }
+.osmp-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(15,45,74,0.12); border-color: var(--crystal-blue); }
+.osmp-card.published { background: linear-gradient(135deg, #F0FDF4 0%, white 100%); border-color: var(--success); }
+.osmp-card.active { border-color: var(--crystal-blue-deep); box-shadow: 0 4px 14px rgba(124,184,219,0.25); }
+.osmp-card.custom { background: linear-gradient(135deg, #FFFBEB 0%, white 100%); }
+.osmp-card.custom::after { content: 'NEW'; position: absolute; top: 12px; right: 12px; background: var(--amber); color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; }
+.tag-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
+.tag-season { background: var(--crystal-blue); color: var(--deep-navy); }
+.tag-product { background: var(--bg-soft); color: var(--navy-soft); }
+.tag-pub { background: var(--success); color: white; }
+.osmp-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; line-height: 1.45; color: var(--deep-navy); letter-spacing: -0.3px; }
+.osmp-card p { font-size: 14px; color: var(--navy-soft); margin-bottom: 12px; line-height: 1.6; }
+.osmp-card .hint { font-size: 11px; color: var(--crystal-blue-deep); font-weight: 600; }
+
+.expanded-area { display: none; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(15,45,74,0.10); margin-bottom: 20px; border-top: 4px solid var(--crystal-blue-deep); }
+.expanded-area.show { display: block; }
+.expanded-meta { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.expanded-meta span { background: var(--bg-soft); color: var(--navy-soft); padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.expanded-area h2 { font-size: 28px; font-weight: 800; margin-bottom: 12px; line-height: 1.3; letter-spacing: -0.6px; }
+.expanded-area .lead { font-size: 15px; color: var(--navy-soft); margin-bottom: 24px; line-height: 1.7; }
+
+.output-block { margin-bottom: 18px; border: 1.5px solid #E0E8F0; border-radius: 10px; overflow: hidden; }
+.output-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: var(--bg-soft); border-bottom: 1.5px solid #E0E8F0; flex-wrap: wrap; gap: 10px; }
+.output-header h3 { font-size: 15px; font-weight: 700; color: var(--deep-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.2px; }
+.output-header .meta { font-size: 11px; color: var(--silver); }
+.copy-btn { background: var(--deep-navy); color: white; border: none; padding: 11px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 8px rgba(15,45,74,0.18); letter-spacing: -0.1px; }
+.copy-btn:hover { background: var(--navy-soft); transform: scale(1.03); }
+.copy-btn.copied { background: var(--success); }
+.output-body { padding: 26px 30px; background: white; font-size: 16px; line-height: 1.95; color: var(--deep-navy); white-space: pre-wrap; word-break: break-word; max-height: 640px; overflow-y: auto; letter-spacing: -0.1px; }
+.output-body.code { font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 13px; background: #F8FAFC; color: var(--navy-soft); line-height: 1.7; }
+.slide-card { padding: 20px 22px; background: var(--bg-soft); border-radius: 10px; margin-bottom: 12px; }
+.slide-card .slide-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.slide-card .slide-num { font-size: 11px; color: var(--crystal-blue-deep); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.slide-card .slide-mini-copy { background: white; border: 1px solid var(--crystal-blue-deep); color: var(--crystal-blue-deep); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-family: inherit; }
+.slide-card .slide-mini-copy:hover { background: var(--crystal-blue-deep); color: white; }
+.slide-card .slide-mini-copy.copied { background: var(--success); color: white; border-color: var(--success); }
+.slide-card .slide-text { font-size: 16px; color: var(--deep-navy); line-height: 1.85; white-space: pre-wrap; letter-spacing: -0.1px; padding: 4px 0; }
+
+.mapping-box { background: #FFFBEB; border: 1px solid #FCD34D; padding: 12px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; }
+.mapping-box strong { color: var(--amber); display: block; margin-bottom: 6px; font-size: 12px; }
+.mapping-box ul { list-style: none; padding-left: 0; }
+.mapping-box li { padding: 3px 0; color: var(--navy-soft); }
+
+.copy-all { display: block; width: 100%; background: linear-gradient(135deg, var(--deep-navy) 0%, var(--navy-soft) 100%); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 10px; transition: all 0.2s; }
+.copy-all:hover { transform: translateY(-2px); }
+.copy-all.copied { background: var(--success); }
+
+.learn-box { background: #FFFBEB; border-left: 4px solid var(--warning); padding: 14px 18px; border-radius: 8px; margin-top: 16px; }
+.learn-box h4 { font-size: 13px; color: var(--deep-navy); margin-bottom: 6px; }
+.learn-box .learn-hint { font-size: 11px; color: var(--navy-soft); margin-bottom: 10px; }
+.learn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.learn-input { background: white; border: 1px solid #E0E8F0; padding: 8px 10px; border-radius: 6px; font-size: 12px; font-family: inherit; color: var(--deep-navy); width: 100%; }
+.learn-input::placeholder { color: var(--silver); }
+.learn-input:focus { outline: none; border-color: var(--crystal-blue-deep); }
+.learn-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.learn-row label { font-size: 12px; color: var(--navy-soft); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.learn-save { background: var(--success); color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; margin-left: auto; }
+.learn-save:hover { background: #059669; }
+
+.toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--deep-navy); color: white; padding: 14px 28px; border-radius: 50px; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(15,45,74,0.25); opacity: 0; transition: all 0.3s; z-index: 2000; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,45,74,0.6); z-index: 1500; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+.modal-overlay.show { display: flex; }
+.modal-card { background: white; border-radius: 16px; padding: 32px; max-width: 800px; width: 100%; box-shadow: 0 20px 60px rgba(15,45,74,0.3); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.modal-header h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.modal-close { background: transparent; border: none; color: var(--silver); font-size: 32px; cursor: pointer; line-height: 1; padding: 0; }
+.modal-close:hover { color: var(--deep-navy); }
+.modal-hint { font-size: 13px; color: var(--navy-soft); margin-bottom: 20px; line-height: 1.6; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+.modal-field label { display: block; font-size: 12px; font-weight: 700; color: var(--navy-soft); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.modal-field input, .modal-field select, .modal-field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #E0E8F0; border-radius: 8px; font-size: 14px; font-family: inherit; color: var(--deep-navy); background: white; }
+.modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { outline: none; border-color: var(--crystal-blue-deep); }
+.generate-prompt-btn { display: block; width: 100%; background: linear-gradient(135deg, var(--crystal-blue-deep) 0%, var(--deep-navy) 100%); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 10px; transition: all 0.2s; }
+.generate-prompt-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(124,184,219,0.3); }
+.prompt-output, .result-section { margin-top: 20px; padding: 20px; background: var(--bg-soft); border-radius: 10px; }
+.prompt-output h3, .result-section h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--deep-navy); }
+.prompt-output textarea, .result-section textarea { width: 100%; padding: 14px; border: 1.5px solid #E0E8F0; border-radius: 8px; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; background: white; color: var(--navy-soft); min-height: 200px; resize: vertical; line-height: 1.6; }
+.add-card-btn { display: block; width: 100%; background: var(--success); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 10px; transition: all 0.2s; }
+.add-card-btn:hover { background: #059669; }
+.cc-guide { background: white; border-left: 3px solid var(--crystal-blue-deep); padding: 12px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 12px; color: var(--navy-soft); line-height: 1.6; }
+.cc-guide b { color: var(--deep-navy); }
+
+.footer { margin-top: 28px; padding: 18px; text-align: center; color: var(--silver); font-size: 12px; }
+.footer code { background: var(--bg-soft); padding: 3px 8px; border-radius: 4px; }
+
+@media (max-width: 640px) {
+  body { padding: 14px 10px; }
+  .header { padding: 18px; }
+  .header h1 { font-size: 22px; }
+  .osmp-grid { grid-template-columns: 1fr; }
+  .expanded-area { padding: 16px; }
+  .modal-card { padding: 20px; }
+  .modal-grid { grid-template-columns: 1fr; }
+  .section-title { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>쥬얼아이스 OSMP — 오늘의 콘텐츠</h1>
+  <p id="today-date">카드 클릭 → 산출물 카피 → 네이버·인스타에 그대로 붙여넣기</p>
+</div>
+
+<div class="guide">
+  <strong>✅ 카피하면 본문만 깨끗하게 클립보드에 들어갑니다.</strong> 화면의 [라벨]·매핑 안내는 카피에 포함되지 않습니다. 네이버·인스타에 그대로 붙여넣기.
+</div>
+
+<div class="section-title">
+  <span>📌 오늘의 추천</span>
+  <button class="new-content-btn" onclick="openNewModal()"><span class="plus">+</span> 새 콘텐츠 만들기</button>
+</div>
+<div class="osmp-grid" id="card-grid"></div>
+<div class="expanded-area" id="expanded-area"></div>
+
+<div class="footer">
+  <p>쥬얼아이스 OSMP · 원소스 멀티포스팅 콘텐츠 두뇌 · 컨셉북 정본 "음료의 마지막 보석" 적용</p>
+  <p>새 카드는 브라우저 로컬에 저장됩니다. 다른 PC에서는 안 보입니다.</p>
+</div>
+
+</div>
+
+<!-- 새 콘텐츠 만들기 모달 -->
+<div class="modal-overlay" id="new-modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>새 콘텐츠 만들기</h2>
+      <button class="modal-close" onclick="closeNewModal()">×</button>
+    </div>
+    <p class="modal-hint">아래 양식을 채우면 Claude Code(또는 claude.ai)에 붙여넣을 프롬프트가 자동 생성됩니다. Claude 결과(JSON)를 받아서 "카드로 추가"하면 즉시 카피·페이스트 가능한 카드가 생성됩니다.</p>
+
+    <div class="cc-guide">
+      <b>📌 Claude Code로 진행하는 법:</b><br>
+      ① 양식 채우기 → ② 프롬프트 카피 → ③ Claude Code 또는 claude.ai에서 새 대화 열기 → ④ 카피한 프롬프트 붙여넣기 → ⑤ Claude가 반환한 JSON 전체 카피 → ⑥ 아래 결과 영역에 붙여넣기 → ⑦ "카드로 추가"
+    </div>
+
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>시즌·테마</label>
+        <select id="new-season">
+          <option>5월 가정의달</option>
+          <option>여름 하이볼</option>
+          <option>가을 위스키</option>
+          <option>겨울 홈바</option>
+          <option>B2B</option>
+          <option>감성·혼술</option>
+          <option>교육·정보성</option>
+          <option>선물</option>
+          <option>__custom__</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>제품</label>
+        <select id="new-product">
+          <option>DuoMaker</option>
+          <option>ABLR</option>
+          <option>ABLR Zero</option>
+          <option>아이스볼 65mm</option>
+          <option>시그니처 각인</option>
+          <option>투명얼음 원리</option>
+          <option>집들이·선물</option>
+          <option>__custom__</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>톤</label>
+        <select id="new-tone">
+          <option>B2C 홈바</option>
+          <option>B2C 라이프스타일</option>
+          <option>B2C 감성·혼술</option>
+          <option>B2C 교육·정보</option>
+          <option>B2C 선물</option>
+          <option>B2B 프리미엄</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>주제·앵글 (자유 입력)</label>
+        <input id="new-topic" placeholder="예: 가을 위스키와 65mm">
+      </div>
+    </div>
+
+    <button class="generate-prompt-btn" onclick="generatePrompt()">🤖 프롬프트 자동 생성</button>
+
+    <div class="prompt-output" id="prompt-output" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3>📋 Claude Code에 붙여넣을 프롬프트</h3>
+        <button class="copy-btn" onclick="copyPrompt()">📋 프롬프트 카피</button>
+      </div>
+      <textarea id="prompt-text" readonly></textarea>
+    </div>
+
+    <div class="result-section" id="result-section" style="display:none;">
+      <h3>📥 Claude 결과 JSON 붙여넣기</h3>
+      <textarea id="result-json" placeholder='Claude가 반환한 JSON 전체를 여기에 붙여넣으세요 (예: {"title":"...","blog":"...","carousel":[...],...})'></textarea>
+      <button class="add-card-btn" onclick="addNewCard()">➕ 카드로 추가</button>
+      <div id="result-error" style="color:var(--danger); margin-top:10px; font-size:12px;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ 클립보드에 복사됨!</div>
+
+<script>
+// ========== 기본 8장 카드 데이터 ==========
+const BASE_CARDS = [
+{
+  id:1, season:'5월 가정의달', product:'DuoMaker', tone:'B2C 홈바',
+  title:'음료의 마지막 보석을 집에서 — DuoMaker 7일 직접 사용기',
+  lead:'5월 가정의달 + 홈바 2030 타겟. 컨셉북 정본 "음료의 마지막 보석" 적용.',
+  blog:`음료의 마지막 보석을 집에서 — DuoMaker 7일 직접 사용기
+
+홈바에서 위스키 마실 때 얼음이 빨리 녹아 답답하셨죠?
+쥬얼아이스 듀오메이커로 7일 동안 매일 다른 음료를 만들어본 결과,
+얼음 사이즈·녹는 속도·맛 변화를 사진과 영상으로 정리했습니다.
+
+DuoMaker는 단순한 얼음틀이 아닙니다. "음료의 마지막 보석"을 만드는 도구입니다. 65mm 투명 아이스볼이 위스키·하이볼·칵테일의 맛과 향을 지키며 천천히 녹습니다.
+
+7일 실험 — 매일 다른 음료
+
+1일 / 발렌타인 17년 온더락. 30분 후에도 얼음 형태가 유지되었고, 희석은 거의 없었습니다.
+2일 / 산토리 가쿠 하이볼. 잔 안의 보석처럼 빛나는 비주얼이 인스타에 그대로 올릴 만했어요.
+3일 / 진토닉. 향이 분산되지 않고 그대로 살아 있었습니다.
+4~7일 / 칵테일 4종을 차례로 만들어보며 매일 다른 변화를 기록했습니다.
+
+일반 얼음 vs DuoMaker 30분 후
+
+구분 / 일반 얼음 / DuoMaker 65mm
+녹는 시간 / 12분에 절반 / 32분에 절반
+맛 변화 / 빠른 희석 / 거의 없음
+비주얼 / 탁함 / 99% 투명
+
+자주 묻는 질문
+
+Q. 만드는 데 얼마나 걸리나요?
+A. 약 24시간이 걸립니다. 방향 동결 원리로 한 방향씩 천천히 얼리기 때문입니다.
+
+Q. 일반 가정 냉동실에서도 잘 만들어지나요?
+A. 네, EPP 방한재 케이스 덕분에 일반 가정 냉동실에서도 99% 투명한 얼음이 만들어집니다.
+
+Q. 세척은 어떻게 하나요?
+A. KCC 식품 안전 실리콘이라 미지근한 물에 가볍게 헹궈주세요.
+
+얼음이 달라지면, 오늘이 달라집니다.
+와디즈에서 DuoMaker를 직접 만나보세요. 프로필 링크 ▶
+이웃 추가하시면 다음 주 ABLR Zero 7일 후기를 가장 먼저 받아보실 수 있습니다.
+
+#쥬얼아이스 #DuoMaker #듀오메이커 #투명얼음 #홈바 #홈텐딩 #위스키온더락 #하이볼 #와디즈`,
+  carousel:[
+    {t:'1장 / 후크', b:'텀블러 안에서 얼음이 만들어집니다.'},
+    {t:'2장 / 문제', b:'탁한 얼음이 위스키 맛을 망칩니다.\n빠른 희석, 흐려진 향, 평범한 한 잔.'},
+    {t:'3장 / 솔루션', b:'방향 동결 원리로 99% 투명 얼음.\n30분 형태 유지, 맛과 향 보존.'},
+    {t:'4장 / 증거', b:'와디즈 누적 13억\nSGS 유해물질 불검출\nKCC 실리콘 · Made in Korea'},
+    {t:'5장 / CTA', b:'음료의 마지막 보석을 집에서.\n프로필 링크 → 와디즈 ▶'}
+  ],
+  caption:`텀블러 안에서 얼음이 만들어집니다 ✨
+
+음료의 마지막 보석.
+바텐더가 된 것 같은 한 잔이
+집에서도 가능합니다.
+
+DuoMaker로 7일 동안
+매일 다른 음료를 만들어봤어요.
+
+📌 65mm 투명 아이스볼
+📌 30분 형태 유지 · 희석 최소화
+📌 와디즈 누적 13억 · 1만+ 서포터
+
+오늘 한 잔이 달라집니다.
+프로필 링크 → 와디즈 ▶
+
+— "음료의 마지막 보석" · Brilliant Moment, Brilliant Memory`,
+  hashtags:'#쥬얼아이스 #DuoMaker #홈바 #위스키온더락 #투명얼음 #홈텐딩 #아이스ASMR',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Hero shot',
+    '[2] 도입 hook 직후 — Lifestyle bar',
+    '[3] 정의·결론 아래 — Comparison',
+    '[4] 7일 실험 섹션 안 — Texture macro',
+    '[5] CTA 직전 — Brand still life'
+  ],
+  prompts:`[1] Premium 65mm crystal-clear ice ball in a heavy crystal whiskey glass with amber Macallan, soft natural window lighting, marble bar countertop, minimalist composition, ultra-realistic product photography, shallow depth of field, ice white and deep navy palette, 4:5
+
+[2] Cozy home bar at golden hour, hand pouring amber whiskey over flawless transparent ice sphere in crystal glass, warm wood shelves with bottles in background, bokeh, premium lifestyle, natural film grain
+
+[3] Side-by-side: cloudy ice cube on left vs perfectly clear 65mm crystal sphere on right, identical glasses, clean white background, studio lighting, editorial product photography
+
+[4] Extreme macro of crystal-clear 65mm ice ball surface, condensation droplets, prismatic light refraction, deep navy background, ultra macro, tack sharp focus
+
+[5] Minimalist still life — DuoMaker box, mold, and clear ice sphere on Carrara marble, soft diffused light from above, crystal blue accent, premium brand photography`
+},
+{
+  id:2, season:'5월', product:'ABLR Zero', tone:'B2C 환경·라이프스타일',
+  title:'미세플라스틱 0%, 보냉 18시간 — ABLR Zero 솔직 사용기',
+  lead:'환경 의식 + 라이프스타일 2030. SGS 인증 강조.',
+  blog:`미세플라스틱 0%, 보냉 18시간 — ABLR Zero 30일 솔직 사용기
+
+매일 마시는 텀블러 속 음료, 미세플라스틱 걱정 안 하셨나요?
+ABLR Zero는 SGS 시험성적서로 유해물질 불검출이 검증되었습니다.
+30일 동안 매일 사용하며 보냉력과 사용감을 직접 기록했습니다.
+
+ABLR Zero는 텀블러 안에서 얼음이 만들어지는 쥬얼아이스의 보냉·환경 라인입니다. KCC 식품 안전 실리콘에 EPP 방한재를 더해 국내에서 제조하여, 미세플라스틱·환경호르몬 걱정 없이 일상에서 사용할 수 있습니다.
+
+30일 사용기
+
+출근길 / 아이스 아메리카노가 오후 4시까지 시원함을 유지했습니다.
+점심 식사 / 음식 냄새가 배지 않아 다음 음료에도 영향이 없었어요.
+운동 후 / 18시간 보냉 인증값이 그대로 체감되었습니다.
+
+일반 텀블러 vs ABLR Zero
+
+구분 / 일반 텀블러 / ABLR Zero
+미세플라스틱 / 검출 사례 다수 / SGS 불검출
+보냉 / 6~8시간 / 18시간
+세척 / 냄새 배임 / KCC 실리콘
+
+자주 묻는 질문
+
+Q. 일반 텀블러와 가장 큰 차이는 무엇인가요?
+A. 소재 안전성과 보냉력 두 가지입니다.
+
+Q. 식기세척기 사용해도 되나요?
+A. 패킹은 분리 후 세척을 권장합니다.
+
+Q. 컬러 선택은 어떻게 되나요?
+A. 신규 컬러 5종이 출시되었습니다.
+
+아름다움은 책임과 함께.
+ABLR Zero — 프로필 링크 ▶
+
+#쥬얼아이스 #ABLR #ABLRZero #텀블러 #미세플라스틱제로 #보냉텀블러 #홈카페`,
+  carousel:[
+    {t:'1장 / 후크', b:'당신의 텀블러,\n미세플라스틱 검사 받으셨나요?'},
+    {t:'2장 / 문제', b:'일반 텀블러에서 검출되는 미세플라스틱.\n매일 마시는 음료의 진실.'},
+    {t:'3장 / 솔루션', b:'ABLR Zero — SGS 유해물질 불검출.\nKCC 식품 안전 실리콘 · 국내 제조.'},
+    {t:'4장 / 증거', b:'보냉 18시간 · KCC 실리콘\nMade in Korea\n쥬얼아이스 누적 펀딩 15억+'},
+    {t:'5장 / CTA', b:'아름다움은 책임과 함께.\n프로필 링크 → 자사몰 ▶'}
+  ],
+  caption:`당신의 텀블러, 미세플라스틱 검사 받으셨나요? 💧
+
+매일 마시는 음료 안에
+보이지 않는 미세플라스틱.
+
+ABLR Zero는
+SGS 시험성적서로 검증 완료.
+KCC 식품 안전 실리콘.
+국내 제조 Made in Korea.
+
+📌 보냉 18시간 · 일상 동반
+📌 미세플라스틱 0% 검출
+📌 신규 컬러 5종
+
+아름다움은 책임과 함께.
+프로필 링크 ▶
+
+— ABLR Zero · 쥬얼아이스`,
+  hashtags:'#쥬얼아이스 #ABLRZero #텀블러 #미세플라스틱제로 #보냉텀블러 #홈카페 #일상템',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — 텀블러 정물',
+    '[2] 도입 hook 직후 — Outdoor lifestyle',
+    '[3] 정의·결론 아래 — Macro ice',
+    '[4] 비교 표 위 — Side-by-side',
+    '[5] CTA 직전 — Top-down flat lay'
+  ],
+  prompts:`[1] Minimalist ABLR Zero tumbler in soft pastel pink on white marble desk with morning sunlight, condensation droplets on surface, lifestyle product photography, 4:5
+
+[2] Hand holding ABLR Zero tumbler outdoors in spring park, cherry blossom bokeh background, golden hour, lifestyle photography, natural film grain
+
+[3] Extreme macro of crystal-clear ice inside ABLR Zero tumbler, prismatic refraction, ice white and pastel pink palette, tack sharp focus
+
+[4] Side-by-side: ordinary plastic tumbler showing microplastic concern visualization vs ABLR Zero clean concept, editorial split composition, white background
+
+[5] Top-down flat lay — ABLR Zero in 5 colors arranged on Carrara marble, soft diffused overhead light, premium product still life, crystal blue accent`
+},
+{
+  id:3, season:'5월', product:'ABLR', tone:'B2C 오피스·일상',
+  title:'홈오피스에 가장 잘 어울리는 텀블러 — ABLR 14일 사용기',
+  lead:'재택·오피스 2030. 컬러 라인업·디자인 강조.',
+  blog:`홈오피스에 가장 잘 어울리는 텀블러 — ABLR 14일 사용기
+
+재택근무 책상 위 텀블러, 디자인까지 신경 쓰셨나요?
+ABLR을 14일간 사용하며 디자인·실용성·세척감을 정리했습니다.
+
+ABLR은 쥬얼아이스의 오리지널 텀블러 라인입니다. 보냉력과 미니멀 디자인, 5종 컬러 라인업으로 책상 위 인테리어까지 완성합니다.
+
+14일 기록
+
+출근 첫 잔 / 아침 아이스 아메리카노. 향이 살아 있었습니다.
+오후 미팅 / 차가운 물 유지. 컵 표면에 결로가 거의 없었어요.
+저녁 회의 / 따뜻한 차 보온 6시간. 끝까지 따뜻하게 마셨습니다.
+
+컬러 선택 가이드
+
+화이트 / 미니멀 책상에 어울림.
+블랙 / 프로페셔널 오피스.
+블루 / 청량감을 주는 기존 컬러.
+핑크 / 부드러운 일상 (기존 컬러).
+신규 컬러 / 시즌별 출시.
+
+자주 묻는 질문
+
+Q. 보냉 시간은 얼마나 되나요?
+A. 일반 사용 기준 6~8시간입니다.
+
+Q. 세척 방법은요?
+A. KCC 실리콘 패킹을 분리해 세척 가능합니다.
+
+Q. 가격대는 어디서 확인하나요?
+A. 자사몰에서 확인하실 수 있습니다.
+
+책상 위 작은 차이가 하루를 바꿉니다.
+ABLR — 프로필 링크 ▶
+
+#쥬얼아이스 #ABLR #아블러 #텀블러 #오피스텀블러 #홈오피스 #일상템`,
+  carousel:[
+    {t:'1장 / 후크', b:'책상 위 텀블러,\n인테리어가 되시나요?'},
+    {t:'2장 / 문제', b:'기능만 챙긴 텀블러는\n책상 위에서 튐.\n디자인까지 챙겨야 합니다.'},
+    {t:'3장 / 솔루션', b:'ABLR — 5종 컬러 라인업.\n미니멀 디자인 + 보냉.'},
+    {t:'4장 / 증거', b:'쥬얼아이스 누적 펀딩 15억+\n23개국 수출\n1만+ 서포터'},
+    {t:'5장 / CTA', b:'책상 위 작은 차이.\n프로필 링크 → 자사몰 ▶'}
+  ],
+  caption:`재택 책상 위, 텀블러도 인테리어입니다 ☕️
+
+ABLR — 5종 컬러로
+당신의 일상을 완성합니다.
+
+📌 미니멀 디자인
+📌 보냉 6~8시간
+📌 5종 컬러 (시즌 신규 컬러 출시)
+
+작은 차이가 하루를 바꿉니다.
+프로필 링크 ▶
+
+— ABLR · 쥬얼아이스`,
+  hashtags:'#쥬얼아이스 #ABLR #아블러 #텀블러 #오피스텀블러 #홈오피스 #일상템',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Matte black on desk',
+    '[2] 정의 직후 — Flat lay 5 colors',
+    '[3] 컬러 가이드 섹션 안 — Hand holding pink',
+    '[4] FAQ 위 — Close-up texture',
+    '[5] CTA 직전 — Cafe table'
+  ],
+  prompts:`[1] ABLR tumbler in matte black on minimalist home office desk with MacBook, soft window light, scandinavian interior, lifestyle product photography, 4:5
+
+[2] Flat lay top-down — ABLR in 5 colors arranged in row on white marble, soft diffused overhead light, editorial product still life, premium
+
+[3] Hand holding ABLR in soft pink during work-from-home, plants and natural light in background, lifestyle photography
+
+[4] Close-up of ABLR matte texture and clean silhouette, deep navy background, product detail photography
+
+[5] ABLR on warm wood cafe table with notebook and pen, golden hour cafe ambiance, lifestyle shot`
+},
+{
+  id:4, season:'초여름', product:'아이스볼 65mm', tone:'B2C 하이볼',
+  title:'하이볼 시즌 — 65mm 투명 아이스볼로 맛 살리는 법',
+  lead:'5~7월 하이볼 성수기. 산토리·짐빔 등 위스키 키워드 결합.',
+  blog:`하이볼 시즌 — 65mm 투명 아이스볼로 맛 살리는 법
+
+편의점 얼음으로 만든 하이볼이 밍밍한 이유, 아세요?
+얼음이 빨리 녹으며 위스키 풍미를 죽이기 때문입니다.
+65mm 투명 아이스볼 1개로 같은 위스키가 다른 맛이 됩니다.
+
+하이볼의 핵심은 위스키:토닉 비율이 아니라 얼음입니다. 65mm 투명 아이스볼은 30분 동안 형태를 유지하며 희석을 늦춰 줍니다.
+
+산토리 가쿠 하이볼 실험
+
+일반 얼음 / 5분 후 토닉 거의 사라짐, 향 분산.
+65mm 아이스볼 / 20분 후에도 적당한 청량감 유지.
+
+65mm 아이스볼 vs 다른 사이즈
+
+사이즈 / 용도 / 추천 잔
+65mm / 하이볼·온더락 / 텀블러·올드패션드
+50mm / 칵테일·진토닉 / 하이볼잔
+35mm / 콜라·아이스커피 / 일반잔
+
+하이볼 레시피 3종
+
+클래식 하이볼 / 산토리 30ml + 토닉 + 65mm 1개
+진저 하이볼 / 짐빔 30ml + 진저에일 + 65mm 1개 + 라임
+자몽 하이볼 / 잭다니엘 30ml + 자몽토닉 + 65mm 1개
+
+이번 여름, 같은 위스키 다른 맛.
+쥬얼아이스 — 프로필 링크 ▶
+
+#쥬얼아이스 #하이볼 #하이볼만들기 #산토리하이볼 #65mm아이스볼 #홈텐딩`,
+  carousel:[
+    {t:'1장 / 후크', b:'편의점 얼음 하이볼이\n밍밍한 이유.'},
+    {t:'2장 / 문제', b:'얼음이 5분 만에 녹으며\n위스키 풍미를 죽입니다.'},
+    {t:'3장 / 솔루션', b:'65mm 투명 아이스볼.\n30분 형태 유지.'},
+    {t:'4장 / 증거', b:'산토리 가쿠 20분 비교 실험.\n청량감과 향이 그대로.'},
+    {t:'5장 / CTA', b:'올여름 같은 위스키 다른 맛.\n프로필 링크 ▶'}
+  ],
+  caption:`편의점 얼음 하이볼이 밍밍한 이유 🥃
+
+얼음이 5분 만에 녹으며
+위스키 풍미를 죽입니다.
+
+65mm 투명 아이스볼 1개로
+같은 위스키가 다른 맛이 됩니다.
+
+📌 30분 형태 유지
+📌 희석 최소화
+📌 산토리·짐빔·잭다니엘 다 OK
+
+이번 여름, 한 잔이 달라집니다.
+프로필 링크 ▶
+
+— 쥬얼아이스 · 음료의 마지막 보석`,
+  hashtags:'#쥬얼아이스 #하이볼 #하이볼만들기 #산토리하이볼 #65mm아이스볼 #홈텐딩 #홈바',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Highball glass',
+    '[2] 도입 hook 직후 — Pouring tonic',
+    '[3] 레시피 3종 섹션 위 — Three variations',
+    '[4] 사이즈 비교 표 아래 — Macro ice',
+    '[5] CTA 직전 — Lifestyle terrace'
+  ],
+  prompts:`[1] Highball cocktail in tall glass with crystal-clear 65mm ice ball, Suntory whisky bottle in background, golden hour cafe lighting, condensation on glass, ultra-realistic, 4:5
+
+[2] Hand pouring tonic water over 65mm transparent ice ball into highball glass, slow motion droplets frozen mid-air, dark moody bar background
+
+[3] Three highball variations side-by-side — classic, ginger, grapefruit — each with 65mm ice ball, editorial cocktail photography
+
+[4] Extreme macro of 65mm clear ice ball with whiskey amber tones reflecting through, prismatic light, deep navy background
+
+[5] Lifestyle scene — friends enjoying highballs at home bar terrace, evening lights, candid lifestyle photography, warm tones`
+},
+{
+  id:5, season:'B2B', product:'시그니처 각인', tone:'B2B 프리미엄 바',
+  title:'프리미엄 바 차별화 — 로고 각인 시그니처 아이스 도입 사례',
+  lead:'프리미엄 바 5곳 도입 검증. B2B 신규 업장 대상.',
+  blog:`프리미엄 바 차별화 — 로고 각인 시그니처 아이스 도입 사례
+
+같은 가격대 위스키바가 차별화되는 결정적 한 끗.
+시그니처 각인 아이스 도입 사례 5곳을 정리했습니다.
+
+쥬얼아이스 시그니처 아이스는 65mm 투명 아이스볼 표면에 로고·심볼·메뉴명을 각인한 커스텀 얼음입니다. 한 잔에 담기는 브랜드 경험입니다.
+
+도입 사례 5곳 (실명 비공개)
+
+프리미엄 위스키바 A / 위스키 메뉴 차별화. SNS 인증샷 급증.
+시그니처 칵테일 바 B / 시그니처 칵테일 5종과 각인 매칭.
+호텔 라운지 C / VIP 룸 전용 각인 서비스.
+이벤트 케이터링 D / 기업 행사 케이터링에 활용.
+웨딩 케이터링 E / 결혼식 환영주 커스텀에 사용.
+
+도입 효과
+
+지표 / 도입 전 / 도입 후
+인스타 인증 / 주 5회 / 주 30회+
+시그니처 메뉴 매출 / 100% / 140%+
+객단가 / 100% / 115%+
+
+도입 절차
+
+1단계 / 로고·심볼 시안 전달 (AI 파일 또는 PDF)
+2단계 / 샘플 제작 (3일 소요)
+3단계 / 정기 발주 계약 체결
+
+프리미엄 바 차별화, 도입 문의는 DM 또는 이메일로 받습니다.
+
+#쥬얼아이스 #시그니처아이스 #로고각인 #프리미엄바 #B2B #홈바`,
+  carousel:[
+    {t:'1장 / 후크', b:'같은 가격대 바가\n차별화되는 한 끗.'},
+    {t:'2장 / 문제', b:'위스키 메뉴 비슷한 가격대.\n무엇이 손님을 부르는가?'},
+    {t:'3장 / 솔루션', b:'시그니처 각인 아이스.\n한 잔에 담기는 브랜드.'},
+    {t:'4장 / 증거', b:'프리미엄 바 5곳 도입 검증\n인스타 인증 6배 · 객단가 +15%'},
+    {t:'5장 / CTA', b:'도입 문의 — DM ▶'}
+  ],
+  caption:`같은 가격대 위스키바가 차별화되는 한 끗 🥃
+
+시그니처 각인 아이스.
+한 잔에 담기는 브랜드 경험.
+
+📌 프리미엄 바 5곳 도입 검증
+📌 인스타 인증 6배 · 객단가 +15%
+📌 로고·심볼·메뉴명 각인 가능
+
+프리미엄 바 차별화.
+도입 문의 DM ▶
+
+— 쥬얼아이스 B2B`,
+  hashtags:'#쥬얼아이스 #시그니처아이스 #로고각인 #프리미엄바 #B2B #홈바 #위스키바',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Bar interior',
+    '[2] 정의 직후 — Engraved macro',
+    '[3] 도입 사례 5곳 섹션 안 — Bartender pouring',
+    '[4] 도입 효과 표 아래 — Comparison',
+    '[5] CTA 직전 — Patrons photographing'
+  ],
+  prompts:`[1] Premium whiskey bar interior at night, crystal-clear ice ball with engraved logo glowing in spotlight on glass, moody amber lighting, editorial bar photography, 4:5
+
+[2] Close-up of laser-engraved logo on 65mm clear ice ball, prismatic light refraction, dark navy background, ultra macro
+
+[3] Bartender pouring whiskey over engraved signature ice in crystal glass, hands and motion, premium hospitality photography, warm golden tones
+
+[4] Side-by-side: ordinary ice cube vs signature engraved ice, both in identical glasses, editorial product comparison
+
+[5] Lifestyle bar scene with patrons photographing signature ice cocktails for social media, candid premium nightlife photography`
+},
+{
+  id:6, season:'감성', product:'DuoMaker', tone:'B2C 혼술 감성',
+  title:'혼술의 격을 올리는 작은 사치 — DuoMaker',
+  lead:'2030 혼술족. 감성·여백 톤. 컨셉북 "Brilliant Moment".',
+  blog:`혼술의 격을 올리는 작은 사치 — DuoMaker로 만드는 나만의 한 잔
+
+혼자 마시는 한 잔, 대충 마시고 계신가요?
+혼술이야말로 디테일이 살아납니다.
+DuoMaker로 일주일을 다시 살아본 이야기입니다.
+
+혼술은 나 자신을 위한 의식입니다. 65mm 투명 아이스볼 1개가 그 의식을 완성합니다.
+
+혼술 7일
+
+월요일 / 일이 풀리지 않던 날. 위스키 한 잔에 얼음 하나.
+수요일 / 친구 만나기 귀찮은 날. 진토닉과 65mm 한 알.
+금요일 / 책상 정리 후 자축. 하이볼 한 잔.
+주말 / 한낮의 칵테일.
+
+혼술용 글래스 가이드
+
+온더락 / 묵직한 올드패션드 글래스 + 65mm
+하이볼 / 콜린스 글래스 + 65mm
+칵테일 / 쿠페·마티니 글래스 + 50mm
+
+자주 묻는 질문
+
+Q. 가격이 부담스럽지 않나요?
+A. 일반 얼음틀 3~5배입니다. 단, 한 번 사면 평생 사용합니다.
+
+Q. 만드는 게 귀찮지 않나요?
+A. 한 번 물을 채워두면 24시간 후 자동으로 만들어집니다.
+
+오늘 나를 위한 한 잔.
+DuoMaker — 프로필 링크 ▶
+
+#쥬얼아이스 #DuoMaker #혼술 #홈바 #위스키 #하이볼 #감성`,
+  carousel:[
+    {t:'1장 / 후크', b:'혼자 마시는 한 잔,\n대충 마시지 마세요.'},
+    {t:'2장 / 문제', b:'혼술의 격을 떨어뜨리는\n탁한 얼음.'},
+    {t:'3장 / 솔루션', b:'DuoMaker — 65mm 투명 아이스볼.\n한 잔에 자신을 담다.'},
+    {t:'4장 / 증거', b:'와디즈 1만+ 서포터\n매일 다른 한 잔의 기록.'},
+    {t:'5장 / CTA', b:'오늘 나를 위한 한 잔.\n프로필 링크 ▶'}
+  ],
+  caption:`혼자 마시는 한 잔, 대충 마시지 마세요 ✨
+
+혼술은 의식입니다.
+65mm 투명 아이스볼 1개가
+오늘 한 잔의 격을 올립니다.
+
+📌 30분 형태 유지
+📌 99% 투명
+📌 매일 다른 칵테일·하이볼·온더락
+
+오늘 한 잔이 달라집니다.
+프로필 링크 ▶
+
+— DuoMaker · Brilliant Moment, Brilliant Memory`,
+  hashtags:'#쥬얼아이스 #DuoMaker #혼술 #홈바 #위스키 #하이볼 #감성',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Lone hand pouring',
+    '[2] 도입 hook 직후 — Window scene',
+    '[3] 혼술 7일 섹션 안 — Slow motion drop',
+    '[4] 글래스 가이드 안 — Journal flat lay',
+    '[5] CTA 직전 — Lifestyle home bar'
+  ],
+  prompts:`[1] Lone hand pouring whiskey over crystal-clear 65mm ice ball, dim warm lamp light, vinyl record player in soft background blur, intimate solo evening, moody, 4:5
+
+[2] Single highball glass with 65mm ice ball on minimal wooden desk by window, golden hour, book and notebook beside, contemplative mood, lifestyle photography
+
+[3] Slow motion ice ball dropping into whiskey glass, splash frozen mid-air, dark moody background, dramatic single light source
+
+[4] Top-down flat lay — single cocktail with 65mm ice, journal, fountain pen, dried flowers, soft natural light, journal aesthetic
+
+[5] Close-up of person enjoying highball alone at home bar, candid soft focus, warm tones, lifestyle photography`
+},
+{
+  id:7, season:'교육', product:'투명얼음 원리', tone:'B2C 교육·정보성',
+  title:'왜 집 얼음은 탁할까? — 방향 동결 원리 5분 정리',
+  lead:'정보성·저장 유도 콘텐츠. 인스타 알고리즘 저장률 ↑.',
+  blog:`왜 집 얼음은 탁할까? — 방향 동결 원리 5분 완전 정리
+
+집에서 만든 얼음은 왜 탁할까요?
+정답은 "동결 방향"에 있습니다.
+5분만 읽으시면 전문 바텐더 얼음 원리를 이해하실 수 있습니다.
+
+얼음의 투명도는 동결되는 순서가 결정합니다. 일반 냉동실은 모든 방향에서 동시에 얼어 기포와 불순물이 갇히지만, 방향 동결은 한 방향씩 얼며 기포를 밀어냅니다.
+
+일반 동결 vs 방향 동결
+
+구분 / 일반 동결 / 방향 동결
+동결 순서 / 모든 면 동시 / 위 → 아래 한 방향
+기포 위치 / 가운데 갇힘 / 마지막 부분에 모임
+결과 / 탁한 얼음 / 99% 투명 얼음
+
+집에서 방향 동결 시도해보기
+
+1. 종이컵 + 단열재 / 부분적으로 가능 (불완전)
+2. EPP 케이스 + 실리콘 몰드 / DuoMaker가 사용하는 방식
+3. 산업용 머신 / 전문 바텐더용
+
+방향 동결 + 미세 기포 제거
+
+1단계 / 한 방향 동결로 기포를 한쪽으로 몰기
+2단계 / 기포가 모인 부분 잘라내기
+3단계 / 99% 투명한 얼음 완성
+
+자주 묻는 질문
+
+Q. 끓인 물로 만들면 투명한가요?
+A. 부분적으로 도움이 됩니다. 본질은 방향 동결입니다.
+
+Q. 정수기 물과 수돗물의 차이는 크나요?
+A. 차이는 미미합니다. 동결 방식이 핵심입니다.
+
+Q. 시간 단축법이 있나요?
+A. 24시간이 표준이며 무리한 단축은 권장하지 않습니다.
+
+원리를 알면 한 잔이 달라집니다.
+저장하시고 다음에 다시 보세요.
+
+#쥬얼아이스 #투명얼음 #방향동결 #얼음원리 #홈바팁 #홈텐딩`,
+  carousel:[
+    {t:'1장 / 후크', b:'집 얼음은 왜 탁할까?'},
+    {t:'2장 / 문제', b:'모든 방향에서 동시에 얼면\n기포가 갇혀 탁해집니다.'},
+    {t:'3장 / 솔루션', b:'방향 동결 — 위에서 아래로\n한 방향으로 얼리기.'},
+    {t:'4장 / 증거', b:'DuoMaker는 이 원리로\n99% 투명 얼음을 만듭니다.'},
+    {t:'5장 / CTA', b:'저장하고 다시 보세요.\n프로필 링크 → 더 알아보기 ▶'}
+  ],
+  caption:`집 얼음은 왜 탁할까? 💧
+
+정답은 "동결 방향".
+
+📌 일반 동결 — 사방에서 동시 → 기포 갇힘
+📌 방향 동결 — 한 방향씩 → 99% 투명
+
+전문 바텐더 얼음 원리를
+5분으로 정리했습니다.
+
+저장해두시고
+다음 홈바 만들 때 다시 보세요 💾
+
+프로필 링크 → 더 알아보기 ▶`,
+  hashtags:'#쥬얼아이스 #투명얼음 #방향동결 #얼음원리 #홈바팁 #홈텐딩 #저장각',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Cross-section diagram',
+    '[2] 정의 직후 — Macro time-lapse',
+    '[3] 일반 vs 방향 동결 표 아래 — Comparison',
+    '[4] 시도해보기 섹션 안 — Magnifying glass',
+    '[5] CTA 직전 — Educational still life'
+  ],
+  prompts:`[1] Cross-section diagram visualization — cloudy ice cube on left with bubbles trapped vs clear ice ball on right with bubbles pushed to bottom, infographic style, editorial illustration
+
+[2] Macro photography — ice forming directionally from top to bottom, time-lapse composite, scientific aesthetic, clean white background
+
+[3] Side-by-side comparison — cloudy ordinary ice vs crystal-clear directional-frozen ice in identical glasses, studio lighting, editorial product
+
+[4] Hand holding magnifying glass over clear ice ball revealing internal clarity, scientific exploration mood, soft natural light
+
+[5] Educational infographic-style still life — ice ball, EPP case cross-section diagram, KCC silicone mold, arranged on white desk with annotation labels`
+},
+{
+  id:8, season:'선물', product:'집들이·선물', tone:'B2C 선물 구매자',
+  title:'집들이 선물 1순위 — 와디즈 누적 13억의 비결',
+  lead:'선물 구매자 타겟. 가정의달·집들이 시즌. 와디즈 펀딩 증거.',
+  blog:`집들이 선물 1순위 — 와디즈 누적 13억의 비결
+
+집들이 선물, 또 디퓨저·휴지걸이로 가실 건가요?
+받은 사람이 매일 사용하는 선물을 찾고 계신다면,
+와디즈 누적 13억을 기록한 DuoMaker가 답입니다.
+
+DuoMaker는 받은 사람이 자랑하고 싶어지는 선물입니다. 1만+ 서포터가 검증한 와디즈 누적 펀딩 13억, SGS·KCC 인증, 컨셉북 정의 "음료의 마지막 보석"이 그 이유입니다.
+
+왜 1순위인가
+
+1. 한 번 받으면 평생 사용합니다. 일회성 선물이 아닙니다.
+2. SNS 인증 욕구를 자극합니다. 받자마자 인스타에 올리고 싶어집니다.
+3. 누구 집에도 어울립니다. 호불호가 적습니다.
+4. 가격대가 적절합니다. 부담스럽지 않은 프리미엄입니다.
+
+선물 패키지 옵션
+
+옵션 / 구성 / 추천 대상
+베이직 / DuoMaker 1세트 / 일반 집들이
+프리미엄 / DuoMaker + ABLR / 친한 친구
+럭셔리 / + 시그니처 각인 / VIP·결혼·기념일
+
+후기
+
+"집들이 선물로 받고 매일 위스키 마시는 중" — 와디즈 후기
+"친구가 받자마자 인스타 올림" — 후기
+"올해 받은 선물 중 1등" — 와디즈 후기
+
+받은 사람이 자랑하고 싶은 선물.
+와디즈 — 프로필 링크 ▶
+
+#쥬얼아이스 #DuoMaker #집들이선물 #선물추천 #와디즈 #감성선물`,
+  carousel:[
+    {t:'1장 / 후크', b:'집들이 선물,\n또 디퓨저 사실 건가요?'},
+    {t:'2장 / 문제', b:'1주일 후 잊혀지는 선물.\n받은 사람도 부담.'},
+    {t:'3장 / 솔루션', b:'DuoMaker — 받자마자\n인스타 올리는 선물.'},
+    {t:'4장 / 증거', b:'와디즈 누적 13억\n1만+ 서포터 인정\nSGS · KCC 인증'},
+    {t:'5장 / CTA', b:'받은 사람이 자랑하는 선물.\n프로필 링크 ▶'}
+  ],
+  caption:`집들이 선물, 또 디퓨저 사실 건가요? 🎁
+
+받은 사람이 매일 사용하고
+인스타에 자랑하고 싶은 선물.
+
+DuoMaker.
+
+📌 와디즈 누적 13억
+📌 1만+ 서포터 인정
+📌 SGS · KCC · Made in Korea
+📌 컨셉북 "음료의 마지막 보석"
+
+받은 사람이 1등이라고 말하는 선물.
+프로필 링크 → 와디즈 ▶
+
+— 쥬얼아이스 · Brilliant Memory`,
+  hashtags:'#쥬얼아이스 #DuoMaker #집들이선물 #선물추천 #와디즈 #감성선물',
+  imageMapping:[
+    '[1] 글 최상단 (대표 썸네일) — Gift box',
+    '[2] 도입 hook 직후 — Opening reaction',
+    '[3] 왜 1순위인가 섹션 안 — Box displayed',
+    '[4] 후기 위 — Presenting gift',
+    '[5] CTA 직전 — Flat lay gift set'
+  ],
+  prompts:`[1] Beautifully wrapped DuoMaker gift box with ribbon on minimalist white table, soft natural light, premium gift packaging photography, 4:5
+
+[2] Surprised happy person opening DuoMaker gift, candid lifestyle reaction, warm home interior background, golden hour
+
+[3] DuoMaker components elegantly displayed in opened gift box — mold, case, ice ball — editorial product still life, premium
+
+[4] Hand presenting DuoMaker gift to friend at housewarming party, candid lifestyle moment, warm gathering atmosphere
+
+[5] Top-down flat lay — DuoMaker gift set with handwritten note, dried flowers, ribbon, premium gift aesthetic on Carrara marble`
+}
+];
+
+let CARDS = [...BASE_CARDS];
+
+// 로컬 저장 커스텀 카드 로드
+function loadCustomCards() {
+  try {
+    const saved = localStorage.getItem('osmp-cards-custom');
+    if (saved) {
+      const customs = JSON.parse(saved);
+      customs.forEach(c => { c.custom = true; CARDS.push(c); });
+    }
+  } catch(e) { console.error(e); }
+}
+
+function saveCustomCards() {
+  const customs = CARDS.filter(c => c.custom);
+  localStorage.setItem('osmp-cards-custom', JSON.stringify(customs));
+}
+
+// ========== Rendering ==========
+const grid = document.getElementById('card-grid');
+const expanded = document.getElementById('expanded-area');
+let activeCardId = null;
+
+function getPubStatus(id) { return localStorage.getItem('osmp-pub-' + id) === 'true'; }
+
+function renderCards() {
+  grid.innerHTML = '';
+  CARDS.forEach(card => {
+    const pub = getPubStatus(card.id);
+    const el = document.createElement('div');
+    el.className = 'osmp-card' + (pub ? ' published' : '') + (activeCardId === card.id ? ' active' : '') + (card.custom ? ' custom' : '');
+    el.onclick = () => selectCard(card.id);
+    el.innerHTML = `
+      <div class="tag-row">
+        <span class="tag tag-season">${card.season}</span>
+        <span class="tag tag-product">${card.product}</span>
+        ${pub ? '<span class="tag tag-pub">발행됨</span>' : ''}
+      </div>
+      <h3>${card.title}</h3>
+      <p>${card.lead || ''}</p>
+      <div class="hint">${activeCardId === card.id ? '▼ 아래에서 펼쳐짐' : '▶ 클릭해서 펼치기'}</div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+function selectCard(id) {
+  activeCardId = id;
+  renderCards();
+  renderExpanded(id);
+  expanded.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderExpanded(id) {
+  const card = CARDS.find(c => c.id === id);
+  if (!card) return;
+
+  const carouselHTML = (card.carousel || []).map((s, i) => `
+    <div class="slide-card">
+      <div class="slide-label">
+        <span class="slide-num">${s.t}</span>
+        <button class="slide-mini-copy" data-slide-id="${id}" data-slide-idx="${i}">📋 이 슬라이드만</button>
+      </div>
+      <div class="slide-text">${s.b}</div>
+    </div>
+  `).join('');
+
+  const mappingHTML = (card.imageMapping && card.imageMapping.length) ? `
+    <div class="mapping-box">
+      <strong>📍 블로그 본문 이미지 위치 매핑 (참고용 — 카피에 포함되지 않음)</strong>
+      <ul>${card.imageMapping.map(m => `<li>• ${m}</li>`).join('')}</ul>
+    </div>
+  ` : '';
+
+  const kpi = JSON.parse(localStorage.getItem('osmp-kpi-' + id) || '{}');
+  const deleteBtnHTML = card.custom ? `<button onclick="deleteCustomCard(${id})" style="background:var(--danger);color:white;border:none;padding:8px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;">🗑 이 카드 삭제</button>` : '';
+
+  expanded.classList.add('show');
+  expanded.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+      <div class="expanded-meta">
+        <span>🗓 ${card.season}</span>
+        <span>📦 ${card.product}</span>
+        <span>🎯 ${card.tone || '—'}</span>
+        ${card.custom ? '<span style="background:var(--amber);color:white;">NEW 사용자 생성</span>' : '<span>💡 "음료의 마지막 보석"</span>'}
+      </div>
+      ${deleteBtnHTML}
+    </div>
+    <h2>${card.title}</h2>
+    <p class="lead">${card.lead || ''}</p>
+
+    <div class="output-block">
+      <div class="output-header">
+        <h3>📝 네이버 블로그 본문 <span style="color:var(--success); font-size:11px;">(라벨 없음 · 그대로 붙여넣기)</span></h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="meta">SEO 키워드·체류 2분 30초</span>
+          <button class="copy-btn" data-cid="${id}" data-field="blog">📋 본문만 카피</button>
+        </div>
+      </div>
+      <div class="output-body">${card.blog || ''}</div>
+    </div>
+
+    <div class="output-block">
+      <div class="output-header">
+        <h3>🎴 인스타 카드뉴스 5장 <span style="color:var(--success); font-size:11px;">(슬라이드 라벨 제외 · 본문만 카피)</span></h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="meta">1080×1350 · 4:5</span>
+          <button class="copy-btn" data-cid="${id}" data-field="carousel">📋 5장 통합 카피</button>
+        </div>
+      </div>
+      <div class="output-body">${carouselHTML}</div>
+    </div>
+
+    <div class="output-block">
+      <div class="output-header">
+        <h3>📷 인스타 피드 캡션</h3>
+        <button class="copy-btn" data-cid="${id}" data-field="caption">📋 카피</button>
+      </div>
+      <div class="output-body">${card.caption || ''}</div>
+    </div>
+
+    <div class="output-block">
+      <div class="output-header">
+        <h3># 해시태그</h3>
+        <button class="copy-btn" data-cid="${id}" data-field="hashtags">📋 카피</button>
+      </div>
+      <div class="output-body">${card.hashtags || ''}</div>
+    </div>
+
+    <div class="output-block">
+      <div class="output-header">
+        <h3>🎨 이미지 프롬프트 (영문 · Higgsfield용)</h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="meta">Unlimited ON · 5장</span>
+          <button class="copy-btn" data-cid="${id}" data-field="prompts">📋 프롬프트만 카피</button>
+        </div>
+      </div>
+      <div class="output-body code">${mappingHTML}<div style="white-space:pre-wrap;">${card.prompts || ''}</div></div>
+    </div>
+
+    <button class="copy-all" data-cid="${id}">📋 전체 한 번에 카피 (블로그+카드뉴스+캡션+해시태그+프롬프트)</button>
+
+    <div class="learn-box">
+      <h4>📊 발행 후 자기학습 입력</h4>
+      <div class="learn-hint">발행 1주 후 KPI 입력 권장 · 데이터는 다음 콘텐츠 추천 학습에 반영</div>
+      <div class="learn-row">
+        <label><input type="checkbox" id="pub-${id}" ${getPubStatus(id)?'checked':''}> 발행 완료</label>
+        <input type="text" class="learn-input" id="url-${id}" placeholder="발행 URL (선택)" value="${kpi.url||''}" style="flex:1; min-width:200px;">
+      </div>
+      <div class="learn-grid" style="margin-top:10px;">
+        <input type="number" class="learn-input" id="kpi-views-${id}" placeholder="조회수" value="${kpi.views||''}">
+        <input type="number" class="learn-input" id="kpi-saves-${id}" placeholder="저장수" value="${kpi.saves||''}">
+        <input type="number" class="learn-input" id="kpi-shares-${id}" placeholder="공유·DM" value="${kpi.shares||''}">
+        <input type="number" class="learn-input" id="kpi-duration-${id}" placeholder="체류초(블로그)" value="${kpi.duration||''}">
+      </div>
+      <div class="learn-row">
+        <textarea class="learn-input" id="kpi-note-${id}" placeholder="좋았던 점·아쉬운 점 (자기학습 데이터)" rows="2" style="flex:1;">${kpi.note||''}</textarea>
+        <button class="learn-save" onclick="saveKPI(${id})">💾 저장</button>
+      </div>
+    </div>
+  `;
+  attachButtons();
+}
+
+function attachButtons() {
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-cid');
+      const field = btn.getAttribute('data-field');
+      const card = CARDS.find(c => c.id == id);
+      if (!card) return;
+      let text = '';
+      if (field === 'carousel') text = (card.carousel || []).map(s => s.b).join('\n\n');
+      else if (field === 'blog') text = card.blog || '';
+      else if (field === 'caption') text = card.caption || '';
+      else if (field === 'hashtags') text = card.hashtags || '';
+      else if (field === 'prompts') text = card.prompts || '';
+      copyText(text, btn);
+    };
+  });
+  document.querySelectorAll('.slide-mini-copy').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-slide-id');
+      const idx = parseInt(btn.getAttribute('data-slide-idx'));
+      const card = CARDS.find(c => c.id == id);
+      if (card && card.carousel && card.carousel[idx]) copyText(card.carousel[idx].b, btn);
+    };
+  });
+  document.querySelectorAll('.copy-all').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute('data-cid');
+      const card = CARDS.find(c => c.id == id);
+      const carousel = (card.carousel || []).map(s => s.b).join('\n\n');
+      const all = `=== 네이버 블로그 본문 ===\n\n${card.blog || ''}\n\n\n=== 인스타 카드뉴스 (5장) ===\n\n${carousel}\n\n\n=== 인스타 피드 캡션 ===\n\n${card.caption || ''}\n\n\n=== 해시태그 ===\n\n${card.hashtags || ''}\n\n\n=== 이미지 프롬프트 ===\n\n${card.prompts || ''}`;
+      copyText(all, btn);
+    };
+  });
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('✓ 클립보드에 복사됨!');
+    if (btn) {
+      const original = btn.innerText;
+      btn.classList.add('copied');
+      btn.innerText = '✓ 복사됨';
+      setTimeout(() => { btn.classList.remove('copied'); btn.innerText = original; }, 2000);
+    }
+  }).catch(err => alert('복사 실패: ' + err));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function saveKPI(id) {
+  const pub = document.getElementById('pub-' + id).checked;
+  localStorage.setItem('osmp-pub-' + id, pub);
+  const kpi = {
+    url: document.getElementById('url-' + id).value,
+    views: document.getElementById('kpi-views-' + id).value,
+    saves: document.getElementById('kpi-saves-' + id).value,
+    shares: document.getElementById('kpi-shares-' + id).value,
+    duration: document.getElementById('kpi-duration-' + id).value,
+    note: document.getElementById('kpi-note-' + id).value,
+    timestamp: new Date().toISOString()
+  };
+  localStorage.setItem('osmp-kpi-' + id, JSON.stringify(kpi));
+  showToast('✓ 저장됨!');
+  renderCards();
+}
+
+// ========== 새 콘텐츠 모달 ==========
+function openNewModal() {
+  document.getElementById('new-modal').classList.add('show');
+  document.getElementById('prompt-output').style.display = 'none';
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('result-json').value = '';
+  document.getElementById('result-error').innerText = '';
+}
+function closeNewModal() { document.getElementById('new-modal').classList.remove('show'); }
+
+function generatePrompt() {
+  const season = document.getElementById('new-season').value;
+  const product = document.getElementById('new-product').value;
+  const tone = document.getElementById('new-tone').value;
+  const topic = document.getElementById('new-topic').value || '(자유 — Claude가 알아서 정해주세요)';
+
+  const prompt = `쥬얼아이스 OSMP 새 콘텐츠 생성 요청
+
+[입력]
+- 시즌·테마: ${season}
+- 제품: ${product}
+- 톤: ${tone}
+- 주제·앵글: ${topic}
+
+[브랜드 컨텍스트]
+- 컨셉북 정본: "음료의 마지막 보석" (The Final Jewel of Every Drink)
+- 회사 슬로건: "Brilliant Moment, Brilliant Memory"
+- 핵심 가치: 65mm 투명 아이스볼·30분 형태 유지·방향 동결 원리·KCC 식품 안전 실리콘·EPP 방한재·Made in Korea
+- 인증: SGS 유해물질 불검출
+- 실적: 와디즈 누적 13억·1만+ 서포터·23개국 수출
+- 금기 표현: "제빙기", "5분만에", "최고/1위/100% 효과", B2B 레퍼런스 실명 X
+- 제품 단어: 쥬얼아이스 / DuoMaker / ABLR / ABLR Zero / 아이스볼 65mm
+
+[채널 룰]
+- 네이버 블로그: 1500~2000자, 라벨 없이 자연스러운 글, 직접 촬영 사진 8장 권고, 체류 2분 30초 설계
+- 인스타 카드뉴스: 5장 (후크 → 문제 → 솔루션 → 증거 → CTA)
+- 인스타 캡션: 첫 125자 hook + 본문 + CTA + 줄바꿈 가독성
+- 해시태그: 7개 (브랜드 + 카테고리 + 감성)
+- 이미지 프롬프트: 영문 5개, Higgsfield Nano Banana Pro용
+
+[출력 — 반드시 JSON으로만 반환]
+\`\`\`json
+{
+  "title": "16자~24자 제목 (메인 키워드 앞쪽)",
+  "lead": "한 줄 설명 (60자 내외)",
+  "blog": "네이버 블로그 본문 1500~2000자, 라벨 없이 자연스러운 글. 제목 / 도입 hook / 정의 + 결론 / H2 섹션 2~3개 / FAQ 3개 / 마무리 + CTA / 해시태그 줄 순서. 각 H2는 라벨 없이 그대로 작성.",
+  "carousel": [
+    {"t":"1장 / 후크","b":"강한 1문장"},
+    {"t":"2장 / 문제","b":"페인포인트 2~3줄"},
+    {"t":"3장 / 솔루션","b":"USP 1~2개 + 짧은 설명"},
+    {"t":"4장 / 증거","b":"숫자·인증·레퍼런스 3줄"},
+    {"t":"5장 / CTA","b":"행동 유도 1~2줄"}
+  ],
+  "caption": "인스타 피드 캡션 — 첫 125자 hook 포함, 8~12줄, 본문 + CTA",
+  "hashtags": "#쥬얼아이스 #... (7개)",
+  "imageMapping": [
+    "[1] 글 최상단 (대표 썸네일) — Hero 컷 한국어 설명",
+    "[2] 도입 직후 — Lifestyle 컷",
+    "[3] 정의 아래 — Comparison",
+    "[4] 본문 안 — Macro",
+    "[5] CTA 직전 — Brand still life"
+  ],
+  "prompts": "[1] 영문 프롬프트 (Higgsfield용)\\n\\n[2] ...\\n\\n[3] ...\\n\\n[4] ...\\n\\n[5] ..."
+}
+\`\`\`
+
+JSON만 반환하세요. 다른 설명·주석·markdown 코드블록 라벨 모두 빼고, 위 \`\`\`json 안의 객체만.`;
+
+  document.getElementById('prompt-text').value = prompt;
+  document.getElementById('prompt-output').style.display = 'block';
+  document.getElementById('result-section').style.display = 'block';
+}
+
+function copyPrompt() {
+  const t = document.getElementById('prompt-text').value;
+  copyText(t, event.currentTarget);
+}
+
+function addNewCard() {
+  const errorEl = document.getElementById('result-error');
+  errorEl.innerText = '';
+  let raw = document.getElementById('result-json').value.trim();
+  if (!raw) { errorEl.innerText = 'JSON을 붙여넣어 주세요'; return; }
+  raw = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+
+  let obj;
+  try { obj = JSON.parse(raw); }
+  catch(e) { errorEl.innerText = 'JSON 파싱 실패: ' + e.message; return; }
+
+  const required = ['title','blog','carousel','caption','hashtags','prompts'];
+  for (const k of required) {
+    if (!obj[k]) { errorEl.innerText = `필수 필드 누락: ${k}`; return; }
+  }
+
+  obj.id = Math.max(...CARDS.map(c => c.id), 0) + 1;
+  obj.season = document.getElementById('new-season').value;
+  obj.product = document.getElementById('new-product').value;
+  obj.tone = document.getElementById('new-tone').value;
+  obj.custom = true;
+  if (!obj.imageMapping) obj.imageMapping = [];
+  if (!obj.lead) obj.lead = `${obj.season} · ${obj.product} · ${obj.tone}`;
+
+  CARDS.push(obj);
+  saveCustomCards();
+  renderCards();
+  closeNewModal();
+  showToast('✓ 새 카드 추가됨! (' + obj.title.substring(0, 20) + '...)');
+  setTimeout(() => selectCard(obj.id), 300);
+}
+
+function deleteCustomCard(id) {
+  if (!confirm('이 카드를 삭제하시겠습니까?')) return;
+  CARDS = CARDS.filter(c => c.id !== id);
+  saveCustomCards();
+  if (activeCardId === id) {
+    activeCardId = null;
+    expanded.classList.remove('show');
+  }
+  renderCards();
+  showToast('✓ 카드 삭제됨');
+}
+
+window.addEventListener('load', () => {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  document.getElementById('today-date').innerText = `${dateStr} · 카드 클릭 → 산출물 카피 → 네이버·인스타에 그대로 붙여넣기`;
+  loadCustomCards();
+  renderCards();
+});
+</script>
+</body>
+</html>
