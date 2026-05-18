@@ -64,6 +64,14 @@ body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 .slide-card .slide-mini-copy:hover { background: var(--crystal-blue-deep); color: white; }
 .slide-card .slide-mini-copy.copied { background: var(--success); color: white; border-color: var(--success); }
 .slide-card .slide-text { font-size: 16px; color: var(--deep-navy); line-height: 1.85; white-space: pre-wrap; letter-spacing: -0.1px; padding: 4px 0; }
+.slide-prompt-box { background: white; border: 1px dashed var(--silver); padding: 12px 14px; border-radius: 8px; margin-top: 12px; }
+.slide-prompt-box .sp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.slide-prompt-box .sp-title { font-size: 11px; color: var(--amber); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.slide-prompt-box .sp-copy { background: white; border: 1px solid var(--amber); color: var(--amber); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-family: inherit; font-weight: 600; }
+.slide-prompt-box .sp-copy:hover { background: var(--amber); color: white; }
+.slide-prompt-box .sp-copy.copied { background: var(--success); color: white; border-color: var(--success); }
+.slide-prompt-box .sp-body { font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 11px; line-height: 1.55; color: var(--navy-soft); word-break: break-word; white-space: pre-wrap; }
+.slide-label .slide-actions { display: flex; gap: 6px; }
 
 .mapping-box { background: #FFFBEB; border: 1px solid #FCD34D; padding: 12px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; }
 .mapping-box strong { color: var(--amber); display: block; margin-bottom: 6px; font-size: 12px; }
@@ -217,7 +225,7 @@ body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
     <div class="prompt-output" id="prompt-output" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <h3>📋 Claude Code에 붙여넣을 프롬프트</h3>
-        <button class="copy-btn" onclick="copyPrompt()">📋 프롬프트 카피</button>
+        <button class="copy-btn" data-prompt="true" onclick="copyPrompt(event)">📋 프롬프트 카피</button>
       </div>
       <textarea id="prompt-text" readonly></textarea>
     </div>
@@ -871,6 +879,21 @@ DuoMaker.
 
 let CARDS = [...BASE_CARDS];
 
+// ========== 카드뉴스 슬라이드별 이미지 프롬프트 동적 생성 ==========
+function getSlidePrompt(card, slide, idx) {
+  if (slide.prompt) return slide.prompt;
+  const stages = [
+    { role: 'Hook (1/5)', visual: 'Single dramatic hero shot, eye-catching first frame, bold composition' },
+    { role: 'Problem (2/5)', visual: 'Pain point visualization — side-by-side comparison or symbolic problem image' },
+    { role: 'Solution (3/5)', visual: 'Product or solution hero — clear product shot with feature callout' },
+    { role: 'Proof (4/5)', visual: 'Numbers/badges infographic-style — premium brand authority visual' },
+    { role: 'CTA (5/5)', visual: 'Lifestyle aspirational shot with action cue, premium aesthetic' }
+  ];
+  const st = stages[idx] || stages[0];
+  const overlay = (slide.b || '').replace(/\n/g, ' ').slice(0, 80);
+  return `Instagram carousel slide — ${st.role} for "${card.title}". ${st.visual}. Korean text overlay (clean sans-serif Pretendard, bold): "${overlay}". Style: premium 쥬얼아이스 brand — ice white + crystal blue + deep navy palette, marble or wood surface, soft natural lighting. Product context: ${card.product}. 1080x1350 (4:5 vertical), ultra-realistic product photography, high contrast, prismatic ice clarity.`;
+}
+
 // 로컬 저장 커스텀 카드 로드
 function loadCustomCards() {
   try {
@@ -926,15 +949,26 @@ function renderExpanded(id) {
   const card = CARDS.find(c => c.id === id);
   if (!card) return;
 
-  const carouselHTML = (card.carousel || []).map((s, i) => `
+  const carouselHTML = (card.carousel || []).map((s, i) => {
+    const slidePrompt = getSlidePrompt(card, s, i);
+    return `
     <div class="slide-card">
       <div class="slide-label">
         <span class="slide-num">${s.t}</span>
-        <button class="slide-mini-copy" data-slide-id="${id}" data-slide-idx="${i}">📋 이 슬라이드만</button>
+        <div class="slide-actions">
+          <button class="slide-mini-copy" data-slide-id="${id}" data-slide-idx="${i}">📋 문구</button>
+        </div>
       </div>
       <div class="slide-text">${s.b}</div>
+      <div class="slide-prompt-box">
+        <div class="sp-head">
+          <span class="sp-title">🎨 이 슬라이드 이미지 프롬프트 (Higgsfield · 영문)</span>
+          <button class="sp-copy slide-prompt-copy" data-slide-id="${id}" data-slide-idx="${i}">📋 프롬프트</button>
+        </div>
+        <div class="sp-body">${slidePrompt}</div>
+      </div>
     </div>
-  `).join('');
+  `;}).join('');
 
   const mappingHTML = (card.imageMapping && card.imageMapping.length) ? `
     <div class="mapping-box">
@@ -1035,6 +1069,7 @@ function renderExpanded(id) {
 
 function attachButtons() {
   document.querySelectorAll('.copy-btn').forEach(btn => {
+    if (btn.dataset.prompt) return; // 모달 프롬프트 카피 버튼은 별도 처리
     btn.onclick = (e) => {
       e.stopPropagation();
       const id = btn.getAttribute('data-cid');
@@ -1043,7 +1078,12 @@ function attachButtons() {
       if (!card) return;
       let text = '';
       if (field === 'carousel') text = (card.carousel || []).map(s => s.b).join('\n\n');
-      else if (field === 'blog') text = card.blog || '';
+      else if (field === 'blog') {
+        const mapping = (card.imageMapping || []).length > 0
+          ? '📸 본문 이미지 위치 (5장 — 아래 본문 흐름 따라 첨부):\n' + card.imageMapping.map(m => '• ' + m).join('\n') + '\n\n──────────────\n\n'
+          : '';
+        text = mapping + (card.blog || '');
+      }
       else if (field === 'caption') text = card.caption || '';
       else if (field === 'hashtags') text = card.hashtags || '';
       else if (field === 'prompts') text = card.prompts || '';
@@ -1057,6 +1097,17 @@ function attachButtons() {
       const idx = parseInt(btn.getAttribute('data-slide-idx'));
       const card = CARDS.find(c => c.id == id);
       if (card && card.carousel && card.carousel[idx]) copyText(card.carousel[idx].b, btn);
+    };
+  });
+  document.querySelectorAll('.slide-prompt-copy').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-slide-id');
+      const idx = parseInt(btn.getAttribute('data-slide-idx'));
+      const card = CARDS.find(c => c.id == id);
+      if (card && card.carousel && card.carousel[idx]) {
+        copyText(getSlidePrompt(card, card.carousel[idx], idx), btn);
+      }
     };
   });
   document.querySelectorAll('.copy-all').forEach(btn => {
@@ -1179,9 +1230,9 @@ JSON만 반환하세요. 다른 설명·주석·markdown 코드블록 라벨 모
   document.getElementById('result-section').style.display = 'block';
 }
 
-function copyPrompt() {
+function copyPrompt(ev) {
   const t = document.getElementById('prompt-text').value;
-  copyText(t, event.currentTarget);
+  copyText(t, ev && ev.currentTarget ? ev.currentTarget : null);
 }
 
 function addNewCard() {
