@@ -880,18 +880,55 @@ DuoMaker.
 let CARDS = [...BASE_CARDS];
 
 // ========== 카드뉴스 슬라이드별 이미지 프롬프트 동적 생성 ==========
+// ===== 제품별 시각 사양 (첨부 이미지 기반) =====
+const PRODUCT_VISUALS = {
+  'DuoMaker': 'JewelIce DuoMaker — cylindrical EPP insulator maker case with vertical pleated/ribbed texture, 16.16cm × 10.5cm × 14.32cm, 927g, paired with food-safe silicone molds producing crystal-clear 65mm ice spheres (137ml) or 50mm cubes (125ml) or 35mm mini spheres (114ml). Available colors: pure White / matte Black / Sky Blue. Premium Korean home bar maker',
+  'ABLR': 'JewelIce ABLR tumbler — vertical fluted/pleated cylinder body, 7.5cm × 15.4cm (similar size to Coca-Cola can for scale reference), available in matte Sky Blue / brushed Silver / matte Black / pure White, double-walled insulated, Korean premium minimalist aesthetic',
+  'ABLR Zero': 'JewelIce ABLR Zero tumbler — transparent Tritan body 8.7cm × 7cm × 16.1cm, 420ml capacity, 400g, with white screw-on lid and leather strap handle, beige/cream tone, SGS certified microplastic-free, KCC food-safe silicone gasket, premium minimalist',
+  '아이스볼 65mm': 'crystal-clear 65mm diameter ice sphere — perfect transparency, no air bubbles, prismatic light refraction, directional-frozen, premium bar quality',
+  '시그니처 각인': 'crystal-clear 65mm ice sphere with custom laser-engraved logo/text on surface, premium signature bar service, prismatic engraving visible',
+  '투명얼음 원리': 'educational visualization — cross-section comparison of cloudy ordinary ice (air bubbles trapped center) vs JewelIce crystal-clear directional-frozen ice (bubbles pushed to one edge)',
+  '집들이·선물': 'JewelIce DuoMaker premium gift box with ribbon — minimalist Korean gift packaging, recipient happy reaction context'
+};
+const SLIDE_ANGLES = [
+  { role: 'Hook (1/5)', angle: 'extreme macro close-up of single key product detail OR single dramatic hero shot isolated on minimal background — must stop scroll in first 0.5 seconds', mood: 'striking, intriguing, bold' },
+  { role: 'Problem (2/5)', angle: 'split-frame comparison (ordinary vs premium) OR symbolic problem visualization (cloudy diluted drink, watered-down whiskey, fast-melting ice)', mood: 'tension, contrast, pain' },
+  { role: 'Solution (3/5)', angle: 'product hero in active use — clear product shot showing feature in action (water pouring, ice forming, holding tumbler), key benefit visually obvious', mood: 'clarity, reveal, satisfaction' },
+  { role: 'Proof (4/5)', angle: 'numbers/certification badges overlaid as graphic elements (와디즈 13억 / SGS / KCC / Made in Korea / 1만+ 서포터) with product subtly in background, infographic-style', mood: 'authority, trust, credibility' },
+  { role: 'CTA (5/5)', angle: 'lifestyle aspirational final shot — product in beautifully styled home bar/cafe/gift context, human hand or implied interaction, golden hour or warm intimate lighting', mood: 'desire, aspiration, action' }
+];
+const SURFACE_CONTEXTS = {
+  'DuoMaker': 'Carrara marble kitchen counter with warm wood backdrop, home bar styling',
+  'ABLR': 'minimalist home office desk with MacBook OR golden hour cafe wood table',
+  'ABLR Zero': 'spring outdoor lifestyle (park bench, cherry blossoms) OR clean minimalist white marble desk',
+  '아이스볼 65mm': 'crystal whiskey glass on dark moody bar countertop, amber whiskey poured',
+  '시그니처 각인': 'premium dark whiskey bar interior at night, moody amber bar lighting',
+  '투명얼음 원리': 'clean white studio background, scientific editorial aesthetic',
+  '집들이·선물': 'warm home interior at golden hour, beautifully wrapped gift on minimalist table'
+};
 function getSlidePrompt(card, slide, idx) {
   if (slide.prompt) return slide.prompt;
-  const stages = [
-    { role: 'Hook (1/5)', visual: 'Single dramatic hero shot, eye-catching first frame, bold composition' },
-    { role: 'Problem (2/5)', visual: 'Pain point visualization — side-by-side comparison or symbolic problem image' },
-    { role: 'Solution (3/5)', visual: 'Product or solution hero — clear product shot with feature callout' },
-    { role: 'Proof (4/5)', visual: 'Numbers/badges infographic-style — premium brand authority visual' },
-    { role: 'CTA (5/5)', visual: 'Lifestyle aspirational shot with action cue, premium aesthetic' }
-  ];
-  const st = stages[idx] || stages[0];
+  const pk = card.product || '';
+  const productVisual = PRODUCT_VISUALS[pk] || `JewelIce ${pk} premium Korean product`;
+  const surface = SURFACE_CONTEXTS[pk] || 'Carrara marble bar countertop with warm wood backdrop';
+  const ang = SLIDE_ANGLES[idx] || SLIDE_ANGLES[0];
   const overlay = (slide.b || '').replace(/\n/g, ' ').slice(0, 80);
-  return `Instagram carousel slide — ${st.role} for "${card.title}". ${st.visual}. Korean text overlay (clean sans-serif Pretendard, bold): "${overlay}". Style: premium 쥬얼아이스 brand — ice white + crystal blue + deep navy palette, marble or wood surface, soft natural lighting. Product context: ${card.product}. 1080x1350 (4:5 vertical), ultra-realistic product photography, high contrast, prismatic ice clarity.`;
+  return `Instagram carousel slide — ${ang.role} for "${card.title}"
+
+[Product] ${productVisual}.
+
+[Composition] ${ang.angle}.
+[Mood] ${ang.mood}.
+[Surface/Context] ${surface}.
+[Lighting] Soft natural window light or golden hour, prismatic refraction on ice if visible, shallow depth of field.
+
+[Korean text overlay] Pretendard Bold sans-serif, white text on dark OR deep navy on light background — "${overlay}"
+
+[Color palette] Ice white #FAFCFE + Crystal Blue #B8E0F0 + Deep Navy #0F2D4A as base; amber whiskey accent if whiskey context; warm wood/marble surfaces.
+
+[Format] 1080×1350 px (4:5 vertical Instagram carousel), ultra-realistic premium product photography, editorial high contrast, tack-sharp focus on product.
+
+[Brand] 쥬얼아이스 (JewelIce) — "음료의 마지막 보석 / The Final Jewel of Every Drink".`;
 }
 
 // 로컬 저장 커스텀 카드 로드
