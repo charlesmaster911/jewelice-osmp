@@ -147,6 +147,17 @@ body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   <strong>✅ 카피하면 본문만 깨끗하게 클립보드에 들어갑니다.</strong> 화면의 [라벨]·매핑 안내는 카피에 포함되지 않습니다. 네이버·인스타에 그대로 붙여넣기.
 </div>
 
+<div class="guide" style="border-left-color: #E74C3C; background: #FFF8F6;">
+  <strong style="color: #C0392B;">📷 이미지 프롬프트는 반드시 제품 Reference 사진 첨부 후 생성하세요.</strong><br>
+  <span style="font-size: 12px; line-height: 1.7;">
+  AI가 제품을 그대로 그리도록 <b>실제 제품 사진을 reference로 첨부</b>해야 합니다. 첨부 없이 prompt만 쓰면 "Jewellce" 오타 같은 가짜 제품이 나옵니다.<br>
+  📁 <b>Reference 사진 위치</b>: <code>2_地/02_마케팅/brand-brain/products/</code> (duomaker·ablr·ablr-zero·ice-molds 하위 폴더)<br>
+  🛠️ <b>AI 도구</b>: <b>Nano Banana Pro</b>(Higgsfield Unlimited ON) / <b>ChatGPT 4o image edit</b> / <b>Krea Edit</b> — image-to-image 모드<br>
+  ✏️ <b>카피 텍스트는 절대 AI에 박지 말 것</b> → <b>Canva에서 직접 입력</b> (AI는 한글·영문 텍스트 자주 틀림)<br>
+  📋 <b>워크플로우</b>: 카드의 프롬프트 카피 → AI 도구 열기 → 제품 사진 첨부 → 프롬프트 붙여넣기 → 결과를 Canva로 → 카피 얹어서 발행
+  </span>
+</div>
+
 <div class="section-title">
   <span>📌 오늘의 추천</span>
   <button class="new-content-btn" onclick="openNewModal()"><span class="plus">+</span> 새 콘텐츠 만들기</button>
@@ -883,7 +894,7 @@ let CARDS = [...BASE_CARDS];
 // ===== 제품별 시각 사양 (첨부 이미지 기반) =====
 const PRODUCT_VISUALS = {
   'DuoMaker': 'JewelIce DuoMaker — cylindrical EPP insulator maker case with vertical pleated/ribbed texture, 16.16cm × 10.5cm × 14.32cm, 927g. Mold options: BALL (two 64mm crystal-clear ice spheres, 13.8g each) OR STICK (six total — two LONG STICKS shaped as SQUARE-CROSS-SECTION CRYSTAL PILLARS / square-column ice bars 35×35×120mm 13.8g, designed for highball glasses with square pillar silhouette; PLUS four MINI STICKS shaped as FLAT RECTANGULAR ICE BLOCKS / rectangular cuboid ice bars 92mm long × 40mm wide × thin depth 4.0g, clearly NOT cubic — visibly elongated flat rectangles). Available case colors: pure White / matte Black / Sky Blue. Premium Korean home bar maker — both ball-ice and bar-stick-ice from one case',
-  'ablr': 'JewelIce ablr tumbler — vertical fluted/pleated cylinder body, 7.5cm × 15.4cm (similar size to Coca-Cola can for scale reference), available in matte Sky Blue / brushed Silver / matte Black / pure White, double-walled insulated. Comes with 3 mold options: BALL (64mm crystal-clear ice sphere, 137ml) OR CUBE (50mm cube with 75mm diagonal, 125ml) OR SPHERE-DIAMOND (64mm faceted spherical-diamond cut, 114ml). Korean premium minimalist aesthetic',
+  'ablr': 'JewelIce ablr tumbler — vertical fluted/pleated cylinder body, 7.5cm × 15.4cm (similar size to Coca-Cola can for scale reference), stainless steel rim at top, lowercase "ablr" wordmark with crosshair-square logo printed on body. Available in SIX COLORS: pure White / cobalt Blue / brushed Silver / matte Black / NEW teal-blue-green / NEW coral-orange (new colors ship with WHITE mold/lid inside). Double-walled insulated. Comes with 3 mold options: BALL (64mm crystal-clear ice sphere, 137ml) OR CUBE (50mm cube with 75mm diagonal, 125ml) OR SPHERE-DIAMOND (64mm faceted spherical-diamond cut, 114ml). Korean premium minimalist aesthetic',
   'ablr zero': 'JewelIce ablr zero tumbler — transparent Tritan body 8.7cm × 7cm × 16.1cm, 420ml capacity, 400g, with white screw-on lid and leather strap handle, beige/cream tone, SGS certified microplastic-free, KCC food-safe silicone gasket, premium minimalist',
   '아이스볼 64mm': 'crystal-clear 64mm diameter ice sphere (137ml water) — perfect transparency, no air bubbles, prismatic light refraction, directional-frozen, premium bar quality',
   '시그니처 각인': 'crystal-clear 64mm ice sphere with custom laser-engraved logo/text on surface, premium signature bar service, prismatic engraving visible',
@@ -906,6 +917,17 @@ const SURFACE_CONTEXTS = {
   '투명얼음 원리': 'clean white studio background, scientific editorial aesthetic',
   '집들이·선물': 'warm home interior at golden hour, beautifully wrapped gift on minimalist table'
 };
+// ===== Reference 사진 매핑 (제품 → Drive 폴더 경로) =====
+const REFERENCE_MAP = {
+  'DuoMaker': 'products/duomaker/  (duomaker-white/black/blue.jpg + size-spec.jpg)',
+  'ablr': 'products/ablr/  (ablr-white/black/silver/blue/teal/coral.jpg)',
+  'ablr zero': 'products/ablr-zero/  (ablr-zero-01~03.jpg + 규격.jpg)',
+  '아이스볼 64mm': 'products/ice-molds/mold-ball-64mm.jpg',
+  '시그니처 각인': 'products/ice-molds/mold-ball-64mm.jpg + 각인 샘플',
+  '투명얼음 원리': 'products/ice-molds/  (모든 몰드 옵션 비교 컷)',
+  '집들이·선물': 'products/duomaker/  + 선물 포장 컷'
+};
+
 function getSlidePrompt(card, slide, idx) {
   if (slide.prompt) return slide.prompt;
   const pk = card.product || '';
@@ -913,22 +935,32 @@ function getSlidePrompt(card, slide, idx) {
   const surface = SURFACE_CONTEXTS[pk] || 'Carrara marble bar countertop with warm wood backdrop';
   const ang = SLIDE_ANGLES[idx] || SLIDE_ANGLES[0];
   const overlay = (slide.b || '').replace(/\n/g, ' ').slice(0, 80);
-  return `Instagram carousel slide — ${ang.role} for "${card.title}"
+  const refPath = REFERENCE_MAP[pk] || `products/${pk}/`;
+  return `⚠️ REFERENCE IMAGE MODE — 첨부 필수
+👉 첨부할 사진: ${refPath}
+👉 AI 도구: Nano Banana Pro (Higgsfield) · ChatGPT 4o image edit · Krea Edit (image-to-image 모드)
+👉 카피 텍스트는 절대 AI에 박지 말 것 → Canva에서 직접 입력
 
-[Product] ${productVisual}.
+────────────────────────────────────
+
+[CRITICAL] USE PROVIDED PRODUCT REFERENCE IMAGE — do NOT redraw the product. Keep product shape, color, logo, wordmark, proportions, surface texture IDENTICAL to the attached reference. Only generate the BACKGROUND, lighting, hands, surrounding context, surface, props. Do NOT add any text/letters/logos to the image (text overlay will be added separately in Canva).
+
+[Slide Role] Instagram carousel slide — ${ang.role} for "${card.title}"
+
+[Product (from reference)] ${productVisual}.
 
 [Composition] ${ang.angle}.
 [Mood] ${ang.mood}.
 [Surface/Context] ${surface}.
 [Lighting] Soft natural window light or golden hour, prismatic refraction on ice if visible, shallow depth of field.
 
-[Korean text overlay] Pretendard Bold sans-serif, white text on dark OR deep navy on light background — "${overlay}"
+[NO TEXT] Generate clean image WITHOUT any letters, numbers, brand names, or Korean characters. All text will be overlaid in Canva afterwards. The Korean copy for this slide is "${overlay}" — but do NOT render it inside the image.
 
 [Color palette] Ice white #FAFCFE + Crystal Blue #B8E0F0 + Deep Navy #0F2D4A as base; amber whiskey accent if whiskey context; warm wood/marble surfaces.
 
 [Format] 1080×1350 px (4:5 vertical Instagram carousel), ultra-realistic premium product photography, editorial high contrast, tack-sharp focus on product.
 
-[Brand] 쥬얼아이스 (JewelIce) — "음료의 마지막 보석 / The Final Jewel of Every Drink".`;
+[Brand context for mood only] 쥬얼아이스 (JewelIce) — "음료의 마지막 보석 / The Final Jewel of Every Drink" (do not render this as text).`;
 }
 
 // 로컬 저장 커스텀 카드 로드
